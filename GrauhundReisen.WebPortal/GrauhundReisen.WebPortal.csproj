@@ -40,6 +40,7 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -117,7 +118,9 @@
     <Content Include="Views\show-all-my-events.html" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\Admin.cs" />
+    <Compile Include="Controller\Admin.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controller\Index.cs" />
     <Compile Include="Boostrapper.cs" />
     <Compile Include="Controller\Booking.cs" />
@@ -127,21 +130,13 @@
     <None Include="Content\css\bootstrap.css.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GrauhundReisen.Contracts\GrauhundReisen.Contracts.csproj">
-      <Project>{8FEF2173-D048-4846-B423-ECF201CD0845}</Project>
-      <Name>GrauhundReisen.Contracts</Name>
+    <ProjectReference Include="..\GrauhundReisen.Funktional\GrauhundReisen.Funktional.fsproj">
+      <Project>{18041fa8-f468-49b2-a3c9-d62b19a2f962}</Project>
+      <Name>GrauhundReisen.Funktional</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GrauhundReisen.Domain\GrauhundReisen.Domain.csproj">
-      <Project>{65BCB66B-65CD-4380-A51C-92524FA4483D}</Project>
-      <Name>GrauhundReisen.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GrauhundReisen.ReadModel\GrauhundReisen.ReadModel.csproj">
-      <Project>{63110AE7-9DF9-4745-8026-2DE15FC064A3}</Project>
-      <Name>GrauhundReisen.ReadModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Grauhhundreisen.Infrastructure\Grauhundreisen.Infrastructure.csproj">
-      <Project>{2C740D79-9D03-456F-AB57-1FD788884602}</Project>
-      <Name>Grauhundreisen.Infrastructure</Name>
+    <ProjectReference Include="..\GrauhundReisen.Infrastructure\GrauhundReisen.Infrastructure.csproj">
+      <Project>{2c740d79-9d03-456f-ab57-1fd788884602}</Project>
+      <Name>GrauhundReisen.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

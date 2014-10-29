@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
-using GrauhundReisen.Domain.Services;
 using Nancy;
+using Grauhundreisen.Infrastructure;
 
 namespace GrauhundReisen.WebPortal.Controller
 {
     public class Admin : NancyModule
     {
-        public Admin(BookingService bookingService)
+        public Admin(EventStoreClient client)
         {
             Get["show-all-my-events"] = _ =>
             {
-                var events = bookingService.GetAllEventsAsString();
+                //dirty, sollte über Service laufen
+                var events = client.RetrieveAllAsString();
 
 				return View["show-all-my-events", events];
             };

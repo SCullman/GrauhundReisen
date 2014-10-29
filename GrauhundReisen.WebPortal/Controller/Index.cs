@@ -1,40 +1,35 @@
 ﻿using System;
-using GrauhundReisen.Domain.Services;
 using Nancy;
-using GrauhundReisen.ReadModel.Repositories;
+using GrauhundReisen.Funktional;
 using System.Threading.Tasks;
 
 namespace GrauhundReisen.WebPortal
 {
 	public class Index : NancyModule
 	{
-		readonly BookingService _bookingService;
+		readonly CommandHandler.Booking _bookingService;
 
-		public Index (BookingForm bookingForm, BookingService bookingService)
+        public Index(ReadModel.BookingForm bookingForm, CommandHandler.Booking bookingService)
 		{
 			_bookingService = bookingService;
-
 			Get [""] = _ => View ["index", new { bookingForm.CreditCardTypes, bookingForm.Destinations }];
-
 			Post ["", runAsync: true] = async(parameters, cancel) => await ProceedBooking();
 		}
 
-		async Task<object> ProceedBooking()
-		{
-		    var bookingId = Guid.NewGuid().ToString();
-		    var destination = this.Request.Form["Destination"].Value;
-		    var creditCardNumber = this.Request.Form["PaymentCreditCardNumber"].Value;
-		    var creditCardType = this.Request.Form["PaymentCreditCardType"].Value;
-		    var email = this.Request.Form["TravellerEmail"].Value;
-		    var firstName = this.Request.Form["TravellerFirstName"].Value;
-		    var lastName = this.Request.Form["TravellerLastName"].Value;
-
-		    await _bookingService.OrderBooking(bookingId,
-		        destination,
-		        creditCardNumber, creditCardType,
-		        email, firstName, lastName);
-
-			return View ["confirmation", new {BookingId = bookingId}];
-		}
+        async Task <Object> ProceedBooking()
+        {
+            var id = Guid.NewGuid().ToString();
+            var cmd = new Commands.OrderBooking(
+                id,
+                this.Request.Form["TravellerFirstName"].Value,
+                this.Request.Form["TravellerLastName"].Value,
+                this.Request.Form["PaymentCreditCardType"].Value,
+                this.Request.Form["PaymentCreditCardNumber"].Value,
+                this.Request.Form["Destination"].Value,
+                this.Request.Form["TravellerEmail"].Value
+            );
+            await Task.Run (() =>_bookingService.Handle(cmd));
+            return View["confirmation", new { BookingId = id }];
+        }
 	}
 }

@@ -14,6 +14,8 @@ namespace Grauhundreisen.Infrastructure
 
 		public String AccountId;
 
+        public Func<string, Object> DeserializeEvent;
+
 		public bool IsComplete(){
 
 			return ServerUri.ToString ().IsNotNullOrEmpty ()

@@ -1,9 +1,8 @@
 ﻿using System;
-using GrauhundReisen.Domain.Services;
-using GrauhundReisen.ReadModel.EventHandler;
-using GrauhundReisen.ReadModel.Repositories;
+using GrauhundReisen.Funktional;
 using Nancy;
 using Nancy.TinyIoc;
+using Grauhundreisen.Infrastructure;
 
 namespace GrauhundReisen.WebPortal
 {
@@ -11,7 +10,7 @@ namespace GrauhundReisen.WebPortal
     {
 		  // Auskommentieren und anpassen für die eigene Umgebung
 		  // const string ConnectionString = @"C:\[Path to your Development Folder]\GrauhundReisen\GrauhundReisen.WebPortal\Content\DataStore\Bookings\";
-		  const String ConnectionString = "Content/DataStore/Bookings/";
+        const String ConnectionString = @"y:\GrauhundReisen\GrauhundReisen.WebPortal\Content\DataStore\Bookings\";
 
         protected override void ApplicationStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
         {
@@ -24,14 +23,29 @@ namespace GrauhundReisen.WebPortal
 
         private static void SetupIoC(TinyIoCContainer container)
         {
-            var bookingEventHandler = new BookingHandler(ConnectionString);
-            var bookingService = new BookingService();
+            container.Register(EventStoreClient.InitWith(EventStogeConfig));
+            container.Register<ReadModel.BookingForm>();
+            container.Register(new EventHandlers.Booking(ConnectionString));
+            container.Register(new ReadModel.Bookings(ConnectionString));
+        }
 
-            bookingService.WhenStatusChanged(bookingEventHandler.Handle);
+        private static EventStoreClientConfiguration EventStogeConfig
+        {
+            get
+            {
+                var esConfig = new EventStoreClientConfiguration
+                {
+                    AccountId = "neu_alt",
+                    InitActionName = "init",
+                    RemoveActionName = "remove",
+                    RetrieveActionName = "events",
+                    StoreActionName = "store",
+                    ServerUri = new Uri("http://openspace2014.azurewebsites.net"),
+                    DeserializeEvent =  Events.DeserializeEvent
+                };
 
-            container.Register(bookingService);
-            container.Register<BookingForm>();
-            container.Register(new Bookings(ConnectionString));
+                return esConfig;
+            }
         }
     }
 }

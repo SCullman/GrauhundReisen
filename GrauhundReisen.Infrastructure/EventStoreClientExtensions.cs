@@ -1,5 +1,5 @@
 using System;
-using RestSharp.Serializers;
+using Newtonsoft.Json;
 
 namespace Grauhundreisen.Infrastructure
 {
@@ -39,7 +39,7 @@ namespace Grauhundreisen.Infrastructure
 
 		public static EventBag ToEventBag(this object source)
 		{
-			var serializedSource = new JsonSerializer ().Serialize (source);
+            var serializedSource = JsonConvert.SerializeObject(source); ;
 
 			return new EventBag{
 				EventId = Guid.NewGuid().ToString(),
@@ -51,7 +51,7 @@ namespace Grauhundreisen.Infrastructure
 
 		public static EventBag ToEventBag(this object source, String entityId)
 		{
-			var serializedSource = new JsonSerializer ().Serialize (source);
+            var serializedSource = JsonConvert.SerializeObject(source); //new JsonSerializer ().Serialize (source);
 
 			return new EventBag{
 				EventId = Guid.NewGuid().ToString(),
@@ -64,7 +64,7 @@ namespace Grauhundreisen.Infrastructure
 
 		public static string Serialize (this EventBag source)
 		{
-			var serializedSource = new JsonSerializer ().Serialize (source);
+            var serializedSource = JsonConvert.SerializeObject(source); ;
 
 			return serializedSource;
 		}

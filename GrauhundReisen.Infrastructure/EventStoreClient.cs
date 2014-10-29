@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GrauhundReisen.Contracts;
 using RestSharp;
 using RestSharp.Deserializers;
 using fastJSON;
+using Newtonsoft.Json;
+
 
 namespace Grauhundreisen.Infrastructure
 {
 	public class EventStoreClient
 	{
-		public static EventStoreClient InitWith(EventStoreClientConfiguration configuration){
+        private Func<string, Object> _deserializeEvent;
+		
+        public static EventStoreClient InitWith(EventStoreClientConfiguration configuration){
 
 			if (configuration.IsComplete())
 				return new EventStoreClient (configuration);
@@ -24,7 +27,7 @@ namespace Grauhundreisen.Infrastructure
 			AccountId = configuration.AccountId;
 
 			SetupUris (configuration);
-
+            _deserializeEvent = configuration.DeserializeEvent;
 			InitEventStore ();
 		}
 
@@ -178,11 +181,7 @@ namespace Grauhundreisen.Infrastructure
 					.Where (eb => eb.EventType.IsNotNullOrEmpty ())
 					.OrderBy(eb=>eb.TimeStamp)
 					.Select (eb => {
-						var eventType = ContractTypes.Resolve(eb.EventType);
-
-						return eventType != null 
-								? JSON.ToObject (eb.EventData, eventType) 
-								: eb.EventData;
+                        return _deserializeEvent(eb.EventData);
 					})
 					.ToList ();
 
