@@ -7,37 +7,28 @@ module Domain =
     module Booking = 
         type Booking = Aggregate
         
-        //    let getId (history) = 
-        //        let isOrdered = 
-        //            function 
-        //            | Event.Ordered _ -> true
-        //            | _ -> false
-        //        
-        //        let id = 
-        //            history
-        //            |> List.find (isOrdered)
-        //            |> function 
-        //                | Event.Ordered order -> Some order.Id
-        //                | _ -> None
-        //        
-        //        id.Value
-        let getCreditCardNumber history = 
-            let modifiesCC = 
+        let Id history = 
+            let getId = 
                 function 
-                | Event.Ordered _ 
-                | Event.CreditCardNumberChanged _ -> true
-                | _ -> false
-            
-            let number = 
-                history
-                |> List.rev
-                |> List.find modifiesCC
-                |> function 
-                    | Event.Ordered order -> Some order.CreditCardNumber
-                    | Event.CreditCardNumberChanged number -> Some number
-                    | _ -> None
-            
-            number.Value
+                | Event.Ordered order -> Some order.Id
+                | _ -> None
+            history |> first getId
+        
+        let EMail history = 
+            let getEmail = 
+                function 
+                | Event.Ordered order -> Some order.Email
+                | Event.EmailChanged email -> Some email
+                | _ -> None
+            history |> latest getEmail
+        
+        let CreditCardNumber history = 
+            let getNumber = 
+                function 
+                | Event.Ordered order -> Some order.CreditCardNumber
+                | Event.CreditCardNumberChanged number -> Some number
+                | _ -> None
+            history |> latest getNumber
         
         let fromHistory events : Booking = events, []
         let getChanges = getChanges
@@ -57,14 +48,18 @@ module Domain =
         
         let changeEMail email booking : Booking = 
             let h, c = booking
-            let event = Events.EmailChanged email
-            h <& event, c <& event
+            let currentEmail = h |> EMail
+            //Zusätzliche Logik: Falls die Email nicht verändert wurde, bleibt alles beim alten.  
+            if currentEmail = email then booking
+            else 
+                let event = Events.EmailChanged email
+                h <& event, c <& event
         
         let changeCreditCardNumber newNumber booking : Booking = 
             let h, c = booking
-            let oldNumber = h |> getCreditCardNumber
+            let currentNumber = h |> CreditCardNumber
             //Zusätzliche Logik: Falls die Kreditkartennummer nicht verändert wurde, bleibt alles beim alten.    
-            if oldNumber = newNumber then booking
+            if currentNumber = newNumber then booking
             else 
                 let event = Events.CreditCardNumberChanged newNumber
                 h <& event, c <& event
