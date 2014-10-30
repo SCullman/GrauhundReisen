@@ -7,31 +7,28 @@ module Domain =
     module Booking = 
         type Booking = Aggregate
         
-        let Id history = 
+        let Id aggregate = 
             let getId = 
                 function 
                 | Event.Ordered order -> Some order.Id
                 | _ -> None
-            history |> first getId
+            aggregate |> first getId
         
-        let EMail history = 
+        let EMail aggregate = 
             let getEmail = 
                 function 
                 | Event.Ordered order -> Some order.Email
                 | Event.EmailChanged email -> Some email
                 | _ -> None
-            history |> latest getEmail
+            aggregate |> latest getEmail
         
-        let CreditCardNumber history = 
+        let CreditCardNumber aggregate = 
             let getNumber = 
                 function 
                 | Event.Ordered order -> Some order.CreditCardNumber
                 | Event.CreditCardNumberChanged number -> Some number
                 | _ -> None
-            history |> latest getNumber
-        
-        let fromHistory events : Booking = events, []
-        let getChanges = getChanges
+            aggregate |> latest getNumber
         
         let order id firstname lastname email cctype ccnumber destination : Booking = 
             let order = 
@@ -42,24 +39,20 @@ module Domain =
                   CreditCardNumber = ccnumber
                   CreditCardType = cctype
                   Destination = destination }
-            
-            let event = Ordered order
-            [ event ], [ event ]
+            startWith (Event.Ordered order) 
         
-        let changeEMail email booking : Booking = 
-            let h, c = booking
-            let currentEmail = h |> EMail
+        let changeEMail email aggregate : Booking = 
+            let currentEmail = aggregate |> EMail
             //Zusätzliche Logik: Falls die Email nicht verändert wurde, bleibt alles beim alten.  
-            if currentEmail = email then booking
+            if currentEmail = email then aggregate
             else 
-                let event = Events.EmailChanged email
-                h <& event, c <& event
+                let event = Event.EmailChanged email
+                aggregate |> append event
         
-        let changeCreditCardNumber newNumber booking : Booking = 
-            let h, c = booking
-            let currentNumber = h |> CreditCardNumber
+        let changeCreditCardNumber newNumber aggregate : Booking = 
+            let currentNumber = aggregate |> CreditCardNumber
             //Zusätzliche Logik: Falls die Kreditkartennummer nicht verändert wurde, bleibt alles beim alten.    
-            if currentNumber = newNumber then booking
+            if currentNumber = newNumber then aggregate
             else 
-                let event = Events.CreditCardNumberChanged newNumber
-                h <& event, c <& event
+                let event = Event.CreditCardNumberChanged newNumber
+                aggregate |> append event
