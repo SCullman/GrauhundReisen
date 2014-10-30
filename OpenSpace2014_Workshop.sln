@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrauhundReisen.Infrastructu
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GrauhundReisen.Funktional", "GrauhundReisen.Funktional\GrauhundReisen.Funktional.fsproj", "{18041FA8-F468-49B2-A3C9-D62B19A2F962}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74511546-4BE8-4C39-9FB5-61B4013A5A87}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

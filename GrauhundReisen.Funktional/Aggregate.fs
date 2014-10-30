@@ -1,7 +1,5 @@
 ﻿namespace GrauhundReisen.Funktional
 
-open Events
-
 module Aggregate = 
     module Projection = 
         let rec first (p : 'e -> 'a option) (l : 'e list) : 'a = 
@@ -14,33 +12,23 @@ module Aggregate =
         
         let latest p l = List.rev l |> first p
     
-    type History = Event list
+    type Aggregate<'e> = 
+        { History : list<'e>
+          Changes : list<'e> }
     
-    type Changes = Event list
+    let getChanges aggregate = aggregate.Changes
     
-    type Aggregate = History * Changes
+    let fromHistory events = 
+        { History = events
+          Changes = [] }
     
-    let getChanges aggregate = 
-        let _, c = aggregate
-        c
+    let startWith e = 
+        { History = [ e ]
+          Changes = [ e ] }
     
-    let getHistory aggregate = 
-        let h, _ = aggregate
-        h
+    let append e a = 
+        { History = List.append a.History [ e ]
+          Changes = List.append a.Changes [ e ] }
     
-    let fromHistory events = events, []
-    let startWith (e : Event) = [ e ], [ e ]
-    
-    let append (e : Event) a = 
-        let h, c = a
-        List.append h [ e ], List.append c [ e ]
-    
-    let latest p a = 
-        a
-        |> getHistory
-        |> Projection.latest p
-    
-    let first p a = 
-        a
-        |> getHistory
-        |> Projection.first p
+    let latest p a = a.History |> Projection.latest p
+    let first p a = a.History |> Projection.first p

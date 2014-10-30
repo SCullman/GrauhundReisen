@@ -5,7 +5,7 @@ open Aggregate
 
 module Domain = 
     module Booking = 
-        type Booking = Aggregate
+        type Booking = Aggregate<Event>
         
         let Id aggregate = 
             let getId = 
