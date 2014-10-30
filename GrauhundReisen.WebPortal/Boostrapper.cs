@@ -8,9 +8,7 @@ namespace GrauhundReisen.WebPortal
 {
     public class Boostrapper : DefaultNancyBootstrapper
     {
-		  // Auskommentieren und anpassen für die eigene Umgebung
-		  // const string ConnectionString = @"C:\[Path to your Development Folder]\GrauhundReisen\GrauhundReisen.WebPortal\Content\DataStore\Bookings\";
-        const String ConnectionString = @"y:\GrauhundReisen\GrauhundReisen.WebPortal\Content\DataStore\Bookings\";
+		static string ConnectionString = System.Web.Hosting.HostingEnvironment.MapPath(@"\Content\DataStore\Bookings\");
 
         protected override void ApplicationStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
         {
