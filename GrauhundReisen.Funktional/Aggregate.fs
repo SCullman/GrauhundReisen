@@ -2,14 +2,7 @@
 
 module Aggregate = 
     module Projection = 
-        let rec first (p : 'e -> 'a option) (l : 'e list) : 'a = 
-            match l with
-            | head :: tail -> 
-                p head |> function 
-                | Some x -> x
-                | _ -> first p tail
-            | [] -> None.Value
-        
+        let first = List.pick
         let latest p l = List.rev l |> first p
     
     type Aggregate<'e> = 
